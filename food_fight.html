@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Fight!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #fef3c7, #fed7aa);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 3em;
+            color: #ea580c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: #374151;
+        }
+        
+        .info-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .score-info {
+            text-align: left;
+        }
+        
+        .score {
+            font-size: 1.8em;
+            color: #ea580c;
+            font-weight: bold;
+        }
+        
+        .high-score {
+            font-size: 1em;
+            color: #6b7280;
+        }
+        
+        .rebirth-level {
+            font-size: 0.8em;
+            color: #9333ea;
+            font-weight: bold;
+        }
+        
+        .timer {
+            font-size: 1.8em;
+            color: #2563eb;
+            font-weight: bold;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn-blue {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-green {
+            background: #22c55e;
+            color: white;
+            font-size: 1.5em;
+            padding: 15px 30px;
+        }
+        
+        .btn-purple {
+            background: #a855f7;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        .btn-red {
+            background: #ef4444;
+            color: white;
+            font-size: 0.8em;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .recent-hit {
+            text-align: center;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
+            animation: pulse 1s;
+        }
+        
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .hole {
+            aspect-ratio: 1;
+            background: #fed7aa;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .hole:hover {
+            background: #fdba74;
+        }
+        
+        .hole.active {
+            animation: bounce 0.5s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .game-over-screen, .start-screen {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .game-over-title {
+            font-size: 2.5em;
+            color: #ea580c;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .final-score {
+            font-size: 1.5em;
+            color: #374151;
+            margin: 10px 0;
+        }
+        
+        .new-high-score {
+            font-size: 1.2em;
+            color: #22c55e;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .index-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .index-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .index-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #374151;
+        }
+        
+        .collection-info {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+        
+        .complete-banner {
+            background: #f3e8ff;
+            border: 2px solid #a855f7;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            color: #7c3aed;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .variants-section {
+            background: linear-gradient(to right, #fef9c3, #f3e8ff);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .variants-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .variants-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .variant-card {
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .variant-emoji {
+            font-size: 1.5em;
+        }
+        
+        .variant-name {
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .variant-count {
+            font-size: 0.8em;
+        }
+        
+        .rarity-section {
+            margin-bottom: 20px;
+        }
+        
+        .rarity-header {
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .rarity-grid {
+            border: 2px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .food-card {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid;
+            text-align: center;
+        }
+        
+        .food-card.collected {
+            background: #dcfce7;
+            border-color: #4ade80;
+        }
+        
+        .food-card.uncollected {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+        
+        .food-emoji {
+            font-size: 2em;
+        }
+        
+        .food-emoji.uncollected {
+            filter: grayscale(100%);
+            opacity: 0.3;
+        }
+        
+        .food-name {
+            font-size: 0.8em;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        
+        .food-count {
+            font-size: 0.7em;
+            color: #22c55e;
+            font-weight: bold;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">🔨 Food Fight! 🔨</div>
+            <div class="subtitle">Whack the food before it escapes!</div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="info-row">
+                <div class="score-info">
+                    <div class="score">Score: <span id="score">0</span></div>
+                    <div class="high-score">High: <span id="highScore">0</span></div>
+                    <div class="rebirth-level hidden" id="rebirthDisplay">⭐ Rebirth Level <span id="rebirthLevel">0</span></div>
+                </div>
+                <div class="timer">⏱️ <span id="timer">1:00</span></div>
+                <button class="btn btn-blue" onclick="toggleIndex()">
+                    <span id="indexBtnText">Index</span>
+                </button>
+            </div>
+            <div id="recentHit" class="recent-hit hidden"></div>
+        </div>
+        
+        <div id="startScreen" class="start-screen">
+            <div class="game-over-title">Ready to Play?</div>
+            <div class="final-score">You have 1 minute to whack as many foods as you can!</div>
+            <button class="btn btn-green" onclick="startGame()">Start Game</button>
+        </div>
+        
+        <div id="gameOverScreen" class="game-over-screen hidden">
+            <div class="game-over-title">Game Over!</div>
+            <div class="final-score">Final Score: <span id="finalScore">0</span></div>
+            <div id="newHighScoreMsg" class="new-high-score hidden">🎉 New High Score! 🎉</div>
+            <div class="final-score">Foods Collected: <span id="foodsCollected">0</span></div>
+            <button class="btn btn-green" onclick="startGame()">Play Again</button>
+        </div>
+        
+        <div id="gameArea" class="game-grid hidden"></div>
+        
+        <div id="indexPanel" class="index-panel hidden"></div>
+    </div>
+
+    <script>
+        const FOODS = {
+            common: [
+                { name: 'Apple', emoji: '🍎' },
+                { name: 'Banana', emoji: '🍌' },
+                { name: 'Carrot', emoji: '🥕' },
+                { name: 'Bread', emoji: '🍞' },
+                { name: 'Potato', emoji: '🥔' },
+                { name: 'Orange', emoji: '🍊' },
+                { name: 'Cucumber', emoji: '🥒' },
+                { name: 'Grapes', emoji: '🍇' }
+            ],
+            uncommon: [
+                { name: 'Pizza', emoji: '🍕' },
+                { name: 'Burger', emoji: '🍔' },
+                { name: 'Taco', emoji: '🌮' },
+                { name: 'Ice Cream', emoji: '🍦' },
+                { name: 'Donut', emoji: '🍩' },
+                { name: 'Hot Dog', emoji: '🌭' },
+                { name: 'Popcorn', emoji: '🍿' }
+            ],
+            rare: [
+                { name: 'Sushi', emoji: '🍣' },
+                { name: 'Lobster', emoji: '🦞' },
+                { name: 'Cake', emoji: '🍰' },
+                { name: 'Steak', emoji: '🥩' },
+                { name: 'Ramen', emoji: '🍜' },
+                { name: 'Cupcake', emoji: '🧁' }
+            ],
+            epic: [
+                { name: 'Crab', emoji: '🦀' },
+                { name: 'Bento Box', emoji: '🍱' },
+                { name: 'Shrimp', emoji: '🦐' },
+                { name: 'Dumpling', emoji: '🥟' }
+            ],
+            legendary: [
+                { name: 'Squid', emoji: '🦑' },
+                { name: 'Oyster', emoji: '🦪' },
+                { name: 'Champagne', emoji: '🍾' }
+            ],
+            mythic: [
+                { name: 'Dragon Fruit', emoji: '🐉' },
+                { name: 'Unicorn Cake', emoji: '🦄' }
+            ]
+        };
+
+        const RARITY_CONFIG = {
+            common: { chance: 50, color: '#9ca3af', label: 'Common' },
+            uncommon: { chance: 25, color: '#22c55e', label: 'Uncommon' },
+            rare: { chance: 15, color: '#3b82f6', label: 'Rare' },
+            epic: { chance: 7, color: '#a855f7', label: 'Epic' },
+            legendary: { chance: 2.5, color: '#f97316', label: 'Legendary' },
+            mythic: { chance: 0.5, color: '#ec4899', label: 'Mythic' }
+        };
+
+        const VARIANT_CONFIG = {
+            normal: { chance: 85, multiplier: 1, label: '' },
+            gold: { chance: 10, multiplier: 2, label: '✨ Gold', bg: 'linear-gradient(135deg, #fde047, #eab308)' },
+            diamond: { chance: 4, multiplier: 3, label: '💎 Diamond', bg: 'linear-gradient(135deg, #67e8f9, #3b82f6)' },
+            rainbow: { chance: 1, multiplier: 5, label: '🌈 Rainbow', bg: 'linear-gradient(135deg, #f87171, #fbbf24, #4ade80, #3b82f6, #a855f7)' }
+        };
+
+        let gameState = {
+            score: 0,
+            highScore: parseInt(localStorage.getItem('foodFightHighScore') || '0'),
+            timeLeft: 60,
+            gameStarted: false,
+            gameOver: false,
+            activeHoles: Array(6).fill(null),
+            collectedFoods: JSON.parse(localStorage.getItem('foodFightCollected') || '{}'),
+            variantStats: JSON.parse(localStorage.getItem('foodFightVariants') || '{"gold":0,"diamond":0,"rainbow":0}'),
+            rebirthLevel: parseInt(localStorage.getItem('foodFightRebirth') || '0'),
+            showingIndex: false,
+            spawnInterval: null,
+            timerInterval: null
+        };
+
+        function init() {
+            document.getElementById('highScore').textContent = gameState.highScore;
+            if (gameState.rebirthLevel > 0) {
+                document.getElementById('rebirthDisplay').classList.remove('hidden');
+                document.getElementById('rebirthLevel').textContent = gameState.rebirthLevel;
+            }
+            createGameGrid();
+        }
+
+        function createGameGrid() {
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                const hole = document.createElement('div');
+                hole.className = 'hole';
+                hole.textContent = '🕳️';
+                hole.onclick = () => whackFood(i);
+                gameArea.appendChild(hole);
+            }
+        }
+
+        function startGame() {
+            gameState.score = 0;
+            gameState.timeLeft = 60;
+            gameState.gameStarted = true;
+            gameState.gameOver = false;
+            gameState.activeHoles = Array(6).fill(null);
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('timer').textContent = '1:00';
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
+            
+            gameState.spawnInterval = setInterval(spawnFood, 800);
+            gameState.timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            gameState.timeLeft--;
+            const mins = Math.floor(gameState.timeLeft / 60);
+            const secs = gameState.timeLeft % 60;
+            document.getElementById('timer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            
+            if (gameState.timeLeft <= 0) {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            gameState.gameOver = true;
+            gameState.gameStarted = false;
+            clearInterval(gameState.spawnInterval);
+            clearInterval(gameState.timerInterval);
+            
+            if (gameState.score > gameState.highScore) {
+                gameState.highScore = gameState.score;
+                localStorage.setItem('foodFightHighScore', gameState.highScore);
+                document.getElementById('highScore').textContent = gameState.highScore;
+                document.getElementById('newHighScoreMsg').classList.remove('hidden');
+            } else {
+                document.getElementById('newHighScoreMsg').classList.add('hidden');
+            }
+            
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('foodsCollected').textContent = getTotalCollected();
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+        }
+
+        function getRarity() {
+            const rand = Math.random() * 100;
+            let cumulative = 0;
+            for (const [rarity, config] of Object.entries(RARITY_CONFIG)) {
+                cumulative += config.chance;
+                if (rand <= cumulative) return rarity;
+            }
+            return 'common';
+        }
+
+        function getVariant() {
+            const rand = Math.random() * 100;
+            let cumulative = 0;
+            const luckBonus = gameState.rebirthLevel * 0.5;
+            
+            const adjustedVariants = {
+                normal: { chance: Math.max(50, VARIANT_CONFIG.normal.chance - luckBonus * 3) },
+                gold: { chance: VARIANT_CONFIG.gold.chance + luckBonus },
+                diamond: { chance: VARIANT_CONFIG.diamond.chance + luckBonus },
+                rainbow: { chance: VARIANT_CONFIG.rainbow.chance + luckBonus }
+            };
+            
+            for (const [variant, config] of Object.entries(adjustedVariants)) {
+                cumulative += config.chance;
+                if (rand <= cumulative) return variant;
+            }
+            return 'normal';
+        }
+
+        function spawnFood() {
+            if (!gameState.gameStarted || gameState.gameOver) return;
+            
+            const emptyHoles = gameState.activeHoles.map((hole, i) => hole === null ? i : -1).filter(i => i !== -1);
+            if (emptyHoles.length === 0) return;
+            
+            const holeIndex = emptyHoles[Math.floor(Math.random() * emptyHoles.length)];
+            const rarity = getRarity();
+            const variant = getVariant();
+            const foodArray = FOODS[rarity];
+            const food = foodArray[Math.floor(Math.random() * foodArray.length)];
+            
+            gameState.activeHoles[holeIndex] = { food, rarity, variant };
+            updateHoleDisplay(holeIndex);
+            
+            setTimeout(() => {
+                if (gameState.activeHoles[holeIndex]) {
+                    gameState.activeHoles[holeIndex] = null;
+                    updateHoleDisplay(holeIndex);
+                }
+            }, 1500);
+        }
+
+        function updateHoleDisplay(index) {
+            const holes = document.getElementById('gameArea').children;
+            const hole = holes[index];
+            const data = gameState.activeHoles[index];
+            
+            if (data) {
+                hole.textContent = data.food.emoji;
+                hole.className = 'hole active';
+                if (data.variant !== 'normal') {
+                    hole.style.background = VARIANT_CONFIG[data.variant].bg;
+                    hole.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
+                    hole.style.border = '4px solid rgba(255,255,255,0.8)';
+                } else {
+                    hole.style.background = RARITY_CONFIG[data.rarity].color;
+                    hole.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+                    hole.style.border = 'none';
+                }
+            } else {
+                hole.textContent = '🕳️';
+                hole.className = 'hole';
+                hole.style.background = '#fed7aa';
+                hole.style.boxShadow = 'none';
+                hole.style.border = 'none';
+            }
+        }
+
+        function whackFood(index) {
+            const data = gameState.activeHoles[index];
+            if (!data) return;
+            
+            const basePoints = {
+                common: 10, uncommon: 25, rare: 50,
+                epic: 100, legendary: 250, mythic: 500
+            }[data.rarity];
+            
+            const variantMultiplier = VARIANT_CONFIG[data.variant].multiplier;
+            const rebirthMultiplier = 1 + (gameState.rebirthLevel * 0.1);
+            const points = Math.floor(basePoints * variantMultiplier * rebirthMultiplier);
+            
+            gameState.score += points;
+            document.getElementById('score').textContent = gameState.score;
+            
+            const key = `${data.rarity}-${data.food.name}`;
+            gameState.collectedFoods[key] = (gameState.collectedFoods[key] || 0) + 1;
+            localStorage.setItem('foodFightCollected', JSON.stringify(gameState.collectedFoods));
+            
+            if (data.variant !== 'normal') {
+                gameState.variantStats[data.variant]++;
+                localStorage.setItem('foodFightVariants', JSON.stringify(gameState.variantStats));
+            }
+            
+            showRecentHit(data, points);
+            gameState.activeHoles[index] = null;
+            updateHoleDisplay(index);
+        }
+
+        function showRecentHit(data, points) {
+            const recentHit = document.getElementById('recentHit');
+            const bg = data.variant !== 'normal' ? VARIANT_CONFIG[data.variant].bg : RARITY_CONFIG[data.rarity].color;
+            recentHit.style.background = bg;
+            recentHit.textContent = `${data.food.emoji} +${points} pts! ${data.variant !== 'normal' ? VARIANT_CONFIG[data.variant].label + ' ' : ''}(${RARITY_CONFIG[data.rarity].label})`;
+            recentHit.classList.remove('hidden');
+            
+            setTimeout(() => {
+                recentHit.classList.add('hidden');
+            }, 1000);
+        }
+
+        function toggleIndex() {
+            gameState.showingIndex = !gameState.showingIndex;
+            document.getElementById('indexBtnText').textContent = gameState.showingIndex ? 'Play' : 'Index';
+            document.getElementById('gameArea').classList.toggle('hidden');
+            document.getElementById('startScreen').classList.toggle('hidden', gameState.showingIndex);
+            document.getElementById('gameOverScreen').classList.toggle('hidden', gameState.showingIndex);
+            
+            if (gameState.showingIndex) {
+                renderIndex();
+                document.getElementById('indexPanel').classList.remove('hidden');
+            } else {
+                document.getElementById('indexPanel').classList.add('hidden');
+            }
+        }
+
+        function getTotalCollected() {
+            return Object.values(gameState.collectedFoods).reduce((sum, count) => sum + count, 0);
+        }
+
+        function getUniqueCollected() {
+            return Object.keys(gameState.collectedFoods).length;
+        }
+
+        function getTotalUnique() {
+            return Object.values(FOODS).reduce((sum, arr) => sum + arr.length, 0);
+        }
+
+        function hasCollectedAll() {
+            return getUniqueCollected() === getTotalUnique();
+        }
+
+        function doRebirth() {
+            if (!hasCollectedAll()) {
+                alert('You must collect all foods to rebirth!');
+                return;
+            }
+            
+            if (confirm('Rebirth and reset your collection?\n\nYou\'ll gain:\n• +10% points multiplier\n• +0.5% better luck for special variants\n\nYour high score and rebirth level will be kept!')) {
+                gameState.rebirthLevel++;
+                gameState.collectedFoods = {};
+                localStorage.setItem('foodFightRebirth', gameState.rebirthLevel);
+                localStorage.setItem('foodFightCollected', '{}');
+                document.getElementById('rebirthLevel').textContent = gameState.rebirthLevel;
+                document.getElementById('rebirthDisplay').classList.remove('hidden');
+                renderIndex();
+            }
+        }
+
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset ALL progress including rebirths? This cannot be undone!')) {
+                gameState.highScore = 0;
+                gameState.collectedFoods = {};
+                gameState.variantStats = {gold: 0, diamond: 0, rainbow: 0};
+                gameState.rebirthLevel = 0;
+                localStorage.clear();
+                document.getElementById('highScore').textContent = '0';
+                document.getElementById('rebirthDisplay').classList.add('hidden');
+                renderIndex();
+            }
+        }
+
+        function renderIndex() {
+            const panel = document.getElementById('indexPanel');
+            const hasAll = hasCollectedAll();
+            
+            let html = `
+                <div class="index-header">
+                    <div class="index-title">Food Index</div>
+                    <div>
+                        ${hasAll ? '<button class="btn btn-purple" onclick="doRebirth()">⭐ Rebirth</button> ' : ''}
+                        <button class="btn btn-red" onclick="resetProgress()">Reset</button>
+                    </div>
+                </div>
+                <div class="collection-info">
+                    Collected: ${getUniqueCollected()} / ${getTotalUnique()} unique (${getTotalCollected()} total)
+                </div>
+            `;
+            
+            if (gameState.rebirthLevel > 0) {
+                html += `<div class="collection-info" style="color: #9333ea; font-weight: bold;">
+                    ⭐ Rebirth Level ${gameState.rebirthLevel} - +${gameState.rebirthLevel * 10}% Points, +${gameState.rebirthLevel * 0.5}% Variant Luck
+                </div>`;
+            }
+            
+            if (hasAll) {
+                html += '<div class="complete-banner">🎉 Collection Complete! You can Rebirth! 🎉</div>';
+            }
+            
+            html += `
+                <div class="variants-section">
+                    <div class="variants-title">Special Variants</div>
+                    <div class="variants-grid">
+                        <div class="variant-card" style="background: linear-gradient(135deg, #fde047, #eab308)">
+                            <div class="variant-emoji">✨</div>
+                            <div class="variant-name">Gold</div>
+                            <div class="variant-count">x${gameState.variantStats.gold}</div>
+                            <div style="font-size: 0.7em;">2x points</div>
+                        </div>
+                        <div class="variant-card" style="background: linear-gradient(135deg, #67e8f9, #3b82f6)">
+                            <div class="variant-emoji">💎</div>
+                            <div class="variant-name">Diamond</div>
+                            <div class="variant-count">x${gameState.variantStats.diamond}</div>
+                            <div style="font-size: 0.7em;">3x points</div>
+                        </div>
+                        <div class="variant-card" style="background: linear-gradient(135deg, #f87171, #fbbf24, #4ade80, #3b82f6, #a855f7)">
+                            <div class="variant-emoji">🌈</div>
+                            <div class="variant-name">Rainbow</div>
+                            <div class="variant-count">x${gameState.variantStats.rainbow}</div>
+                            <div style="font-size: 0.7em;">5x points</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            for (const [rarity, config] of Object.entries(RARITY_CONFIG)) {
+                html += `
+                    <div class="rarity-section">
+                        <div class="rarity-header" style="background: ${config.color}">
+                            <span>${config.label}</span>
+                            <span>${config.chance}%</span>
+                        </div>
+                        <div class="rarity-grid">
+                `;
+                
+                FOODS[rarity].forEach(food => {
+                    const key = `${rarity}-${food.name}`;
+                    const count = gameState.collectedFoods[key] || 0;
+                    const collected = count > 0;
+                    
+                    html += `
+                        <div class="food-card ${collected ? 'collected' : 'uncollected'}">
+                            <div class="food-emoji ${collected ? '' : 'uncollected'}">${food.emoji}</div>
+                            <div class="food-name">${collected ? food.name : '???'}</div>
+                            ${collected ? `<div class="food-count">x${count}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            panel.innerHTML = html;
+        }
+
+        init();
+    </script>
+</body>
+</html>
